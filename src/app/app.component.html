@@ -1,0 +1,10 @@
+
+<nav class="app-nav">
+  <span class="app-nav__brand">&#9679; MyApp</span>
+  <a routerLink="/roles" routerLinkActive="active" class="app-nav__link">Roles</a>
+  <a routerLink="/usuarios" routerLinkActive="active" class="app-nav__link app-nav__link--soon"
+     [attr.title]="'Próximamente'">Usuarios</a>
+  <span class="app-nav__date">{{ today }}</span>
+</nav>
+
+<router-outlet />
