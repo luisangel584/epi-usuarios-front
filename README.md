@@ -30,8 +30,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 El front se despliega en Cloudflare Pages a través del workflow `.github/workflows/ci-cd.yml`: cada push corre los tests y el build, y si pasan, sube el resultado con la acción `cloudflare/pages-action`. El detalle completo del pipeline está en la sección "Pipelines de CI/CD" más abajo.
 
+* https://epi-usuarios-front.pages.dev: apunta a los cambios de la rama `main`.
 * https://8bde578a.epi-usuarios-front.pages.dev (`feature/deploy`): se generó para iterar el deploy y configurar Cloudflare Pages.
-* https://0918f60e.epi-usuarios-front.pages.dev: apunta a los cambios de la rama `main`.
 
 ## Archivos de environment
 
