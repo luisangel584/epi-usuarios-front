@@ -1,10 +1,19 @@
 
-<nav class="app-nav">
-  <span class="app-nav__brand">&#9679; MyApp</span>
-  <a routerLink="/roles" routerLinkActive="active" class="app-nav__link">Roles</a>
-  <a routerLink="/usuarios" routerLinkActive="active" class="app-nav__link app-nav__link--soon"
-     [attr.title]="'Próximamente'">Usuarios</a>
-  <span class="app-nav__date">{{ today }}</span>
-</nav>
+<ng-container *ngIf="currentUserLoaded$ | async; else appBootLoading">
+  <nav class="app-nav">
+    <span class="app-nav__brand">&#9679; MyApp</span>
+    <a routerLink="/roles" routerLinkActive="active" class="app-nav__link">Roles</a>
+    <a routerLink="/users" routerLinkActive="active" class="app-nav__link">Usuarios</a>
+    <span class="app-nav__loading" *ngIf="loading$ | async">Cargando datos...</span>
+    <span class="app-nav__date">{{ today }}</span>
+  </nav>
 
-<router-outlet />
+  <router-outlet />
+</ng-container>
+
+<ng-template #appBootLoading>
+  <div class="app-boot-loading">
+    <span class="app-boot-loading__spinner"></span>
+    <span class="app-boot-loading__text">Cargando aplicación...</span>
+  </div>
+</ng-template>

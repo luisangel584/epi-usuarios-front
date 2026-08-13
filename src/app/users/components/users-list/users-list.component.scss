@@ -1,0 +1,45 @@
+@use 'variables' as *;
+
+.users-list {
+  width: 100%;
+
+  &__loading {
+    padding: $spacing-md;
+    color: $color-text-muted;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      padding: $spacing-sm-md $spacing-md;
+      border-bottom: 1px solid $color-border;
+      text-align: left;
+    }
+
+    th {
+      background: $color-surface-muted;
+      font-weight: 600;
+    }
+  }
+
+  &__button {
+    margin-right: $spacing-sm;
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+    border: none;
+    border-radius: $radius-sm;
+    background: $color-primary;
+    color: $color-white;
+
+    &--danger {
+      background: $color-danger;
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    color: $color-text-faint;
+  }
+}
