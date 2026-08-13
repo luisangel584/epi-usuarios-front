@@ -1,0 +1,36 @@
+<div class="user-form">
+  <h3 class="user-form__title">{{ editingUser ? 'Editar usuario' : 'Nuevo usuario' }}</h3>
+  <form (ngSubmit)="onSubmit()">
+    <div class="user-form__field">
+      <label class="user-form__label" for="firstName">Nombre</label>
+      <input class="user-form__input" id="firstName" name="firstName" [(ngModel)]="firstName" required placeholder="Ej: Juan" />
+    </div>
+    <div class="user-form__field">
+      <label class="user-form__label" for="lastName">Apellido</label>
+      <input class="user-form__input" id="lastName" name="lastName" [(ngModel)]="lastName" required placeholder="Ej: Pérez" />
+    </div>
+    <div class="user-form__field">
+      <label class="user-form__label" for="age">Edad</label>
+      <input class="user-form__input" id="age" name="age" type="number" [(ngModel)]="age" required placeholder="Ej: 30" />
+    </div>
+    <div class="user-form__field">
+      <label class="user-form__label" for="email">Email</label>
+      <input class="user-form__input" id="email" name="email" type="email" [(ngModel)]="email" required placeholder="Ej: juan@correo.com" />
+    </div>
+    <div class="user-form__field">
+      <label class="user-form__label" for="city">Ciudad</label>
+      <input class="user-form__input" id="city" name="city" [(ngModel)]="city" required placeholder="Ej: CDMX" />
+    </div>
+    <div class="user-form__field">
+      <label class="user-form__label" for="roleId">Rol</label>
+      <select class="user-form__input" id="roleId" name="roleId" [(ngModel)]="roleId">
+        <option value="">Seleccione Rol</option>
+        <option *ngFor="let role of (roles$ | async) ?? []" [value]="role.id">{{ role.name }}</option>
+      </select>
+    </div>
+    <div class="user-form__actions">
+      <button class="user-form__button" type="submit" [disabled]="!firstName.trim() || !lastName.trim()">{{ editingUser ? 'Actualizar' : 'Crear' }}</button>
+      <button class="user-form__button user-form__button--secondary" type="button" *ngIf="editingUser" (click)="cancel.emit()">Cancelar</button>
+    </div>
+  </form>
+</div>

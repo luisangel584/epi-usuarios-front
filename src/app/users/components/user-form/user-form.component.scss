@@ -1,0 +1,57 @@
+@use 'variables' as *;
+
+.user-form {
+  background: $color-surface;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
+
+  &__title {
+    margin: 0 0 $spacing-md;
+  }
+
+  &__field {
+    margin-bottom: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  &__label {
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  &__input {
+    padding: $spacing-sm;
+    border: 1px solid $color-border-light;
+    border-radius: $radius-sm;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    background: $color-white;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__button {
+    padding: $spacing-sm $spacing-md-lg;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    background: $color-primary;
+    color: $color-white;
+
+    &--secondary {
+      background: $color-secondary;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}

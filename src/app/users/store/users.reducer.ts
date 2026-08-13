@@ -7,12 +7,16 @@ export interface UsersState {
   users: User[];
   loading: boolean;
   error: string | null;
+  currentUser: User | null;
+  currentUserLoaded: boolean;
 }
 
 export const initialState: UsersState = {
   users: [],
   loading: false,
   error: null,
+  currentUser: null,
+  currentUserLoaded: false,
 };
 
 export const usersReducer = createReducer(
@@ -40,5 +44,17 @@ export const usersReducer = createReducer(
     users: state.users.filter(u => u.id !== id),
     loading: false
   })),
-  on(UsersAction.deleteUserFailure, (state, { error }) => ({ ...state, error, loading: false }))
+  on(UsersAction.deleteUserFailure, (state, { error }) => ({ ...state, error, loading: false })),
+
+  on(UsersAction.loadCurrentUser, state => ({ ...state, error: null })),
+  on(UsersAction.loadCurrentUserSuccess, (state, { user }) => ({
+    ...state,
+    currentUser: user,
+    currentUserLoaded: true,
+  })),
+  on(UsersAction.loadCurrentUserFailure, (state, { error }) => ({
+    ...state,
+    error,
+    currentUserLoaded: true,
+  })),
 );

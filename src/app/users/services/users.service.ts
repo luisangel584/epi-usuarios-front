@@ -25,6 +25,11 @@ export class UsersService {
       );
   }
 
+  getById(id: number): Observable<User> {
+    return this.http
+      .get<User>(`${this.USERS_API_BASE_URL}/users/${id}`);
+  }
+
   add(user: User): Observable<User> {
     return this.http
       .post<User>(`${this.USERS_API_BASE_URL}/users/add`, user)

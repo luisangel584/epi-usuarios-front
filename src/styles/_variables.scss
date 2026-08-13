@@ -1,0 +1,35 @@
+// Colores
+$color-primary: #3f51b5;
+$color-danger: #e53935;
+$color-secondary: #888;
+$color-white: #fff;
+
+$color-surface: #f9f9f9;
+$color-surface-muted: #f5f5f5;
+
+$color-border: #ddd;
+$color-border-light: #ccc;
+
+$color-text-muted: #888;
+$color-text-faint: #aaa;
+$color-text-body: #555;
+
+$color-overlay: rgba(0, 0, 0, 0.5);
+$color-shadow: rgba(0, 0, 0, 0.2);
+
+// Espaciado
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-sm-md: 0.75rem;
+$spacing-md: 1rem;
+$spacing-md-lg: 1.2rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+
+// Bordes
+$radius-sm: 4px;
+$radius-md: 8px;
+
+// Layout
+$content-max-width: 900px;
+$modal-max-width: 360px;

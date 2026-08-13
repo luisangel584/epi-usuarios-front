@@ -1,0 +1,13 @@
+@use 'variables' as *;
+
+.users-page {
+  max-width: $content-max-width;
+  margin: $spacing-xl auto;
+  padding: 0 $spacing-md;
+  font-family: sans-serif;
+
+  &__title {
+    color: $color-primary;
+    margin-bottom: $spacing-lg;
+  }
+}

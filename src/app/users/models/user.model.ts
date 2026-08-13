@@ -5,4 +5,6 @@ export interface User {
   age: number;
   email: string;
   city: string;
+  createdAt: string;
+  roleId?: string;
 }

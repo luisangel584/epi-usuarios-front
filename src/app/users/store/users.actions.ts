@@ -7,6 +7,11 @@ export const loadUsersSuccess = createAction('[Users] Load Users Success', props
 export const loadUsersFailure = createAction('[Users] Load Users Failure', props<{ error: string}>()
 );
 
+// Load current user (app bootstrap)
+export const loadCurrentUser = createAction('[Users] Load Current User');
+export const loadCurrentUserSuccess = createAction('[Users] Load Current User Success', props<{ user: User }>());
+export const loadCurrentUserFailure = createAction('[Users] Load Current User Failure', props<{ error: string }>());
+
 // Add user
 export const addUser = createAction('[Users] Add User', props<{ user: User}>());
 export const addUserSuccess = createAction('[Users] Add User Success', props<{ user: User}>());
