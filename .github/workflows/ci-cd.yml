@@ -45,5 +45,5 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: epi-usuarios-front
           directory: dist/interview/browser
-          branch: feature/deploy
+          branch: main
 
