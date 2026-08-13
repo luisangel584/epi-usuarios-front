@@ -26,6 +26,13 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
+## URLs desplegadas
+
+El front se despliega en Cloudflare Pages a través del workflow `.github/workflows/ci-cd.yml`: cada push corre los tests y el build, y si pasan, sube el resultado con la acción `cloudflare/pages-action`. El detalle completo del pipeline está en la sección "Pipelines de CI/CD" más abajo.
+
+* https://8bde578a.epi-usuarios-front.pages.dev (`feature/deploy`): se generó para iterar el deploy y configurar Cloudflare Pages.
+* https://0918f60e.epi-usuarios-front.pages.dev: apunta a los cambios de la rama `main`.
+
 ## Archivos de environment
 
 La configuración que cambia según el ambiente vive en `src/environments`. Por ahora solo existen dos: `environment.ts` para producción y `environment.development.ts` para desarrollo. Ambos exportan el mismo shape, hoy nada más traen `usersApiBaseUrl`, la URL base que usa `UsersService` para pegarle a la API:
@@ -415,3 +422,92 @@ Así, cualquier `.scss` de la implementación importa el archivo con `@use 'vari
 ```
 
 Por ahora las variables se usan en toda la implementación de `users` (`users.component.scss`, `users-list.component.scss`, `user-form.component.scss`, `user-edit.component.scss`) y en el modal genérico `confirm-dialog.component.scss`. El resultado visual es idéntico al de antes, el cambio es que ahora si se necesita ajustar el azul primario o el espaciado base, se hace en un solo archivo y se propaga a todos los componentes que lo usan.
+
+## Pipelines de CI/CD
+
+Se armaron dos pipelines de despliegue para el front, los dos disparados por push a `feature/deploy`. Ambos parten del mismo build: `npm run build`, que genera el output en `dist/interview/browser` (el nuevo builder de Angular, `@angular-devkit/build-angular:application`, mete un subdirectorio `browser` en vez de dejar el build directo en `dist/interview`).
+
+### AWS Amplify Hosting (`amplify.yml`)
+
+Vive en la raíz del repo. Amplify lo detecta solo al conectar el repositorio desde su consola (GitHub App, autorización por navegador) y usarlo como build spec:
+
+```yaml
+# amplify.yml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist/interview/browser
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+```
+
+Con la app conectada a la rama `feature/deploy`, cada push dispara build + deploy solo, sin nada más que configurar del lado del repo. Este pipeline quedó pausado por un bloqueo de billing en la cuenta de AWS usada (mensaje "We've noticed an issue with your AWS account", resuelto vía caso de soporte); mientras tanto se usa Cloudflare como alterno.
+
+### Cloudflare Pages vía GitHub Actions (`.github/workflows/ci-cd.yml`)
+
+A diferencia de Amplify, acá el pipeline completo vive versionado en el repo, no en la configuración de un dashboard externo. Dos jobs:
+
+```yaml
+# .github/workflows/ci-cd.yml
+name: CI/CD
+
+on:
+  push:
+    branches: [feature/deploy]
+  pull_request:
+    branches: [feature/deploy]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test -- --watch=false --browsers=ChromeHeadless
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/interview/browser
+          retention-days: 1
+
+  deploy:
+    needs: test-and-build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/interview/browser
+      - uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: epi-usuarios-front
+          directory: dist/interview/browser
+          branch: feature/deploy
+```
+
+`test-and-build` corre en cada push y PR contra `feature/deploy`: instala dependencias, corre los specs de Karma en `ChromeHeadless` y hace el build; el artefacto resultante se sube con `actions/upload-artifact` para pasarlo al siguiente job sin repetir el build. `deploy` solo corre en push (no en PR) y depende de que `test-and-build` haya pasado (`needs: test-and-build`); si los tests fallan, `deploy` queda `skipped` y no se publica nada roto. El último paso sube el artefacto a Cloudflare Pages con la acción oficial `cloudflare/pages-action`.
+
+Este pipeline necesita dos secrets configurados en el repo (**Settings → Secrets and variables → Actions**):
+
+* `CLOUDFLARE_API_TOKEN`: token custom con permiso **Account → Cloudflare Pages → Edit**.
+* `CLOUDFLARE_ACCOUNT_ID`: el Account ID de la cuenta de Cloudflare donde vive el proyecto.
+
+El proyecto `epi-usuarios-front` en Cloudflare se creó como **Pages** (Direct Upload), no como Worker: son productos distintos dentro del mismo dashboard "Workers & Pages" y es fácil terminar creando lo que no es. También hubo que ajustar manualmente el **Production branch** del proyecto (Settings → Builds & deployments) a `feature/deploy`, porque por default apunta a `main`; sin ese ajuste el deploy se publica como *Preview* (solo accesible por su URL con hash) y la URL raíz del proyecto (`epi-usuarios-front.pages.dev`) sigue devolviendo 404.
