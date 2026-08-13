@@ -1,0 +1,18 @@
+<div class="users-page">
+  <h2 class="users-page__title">
+    Gestión de Usuarios
+  </h2>
+
+  <app-user-form
+    class="users-page__form"
+    (save)="onSave($event)"
+  ></app-user-form>
+
+  <app-users-list
+    class="users-page__list"
+    [users]="(users$ | async) ?? []"
+    [loading]="(loading$ | async) ?? false"
+    (edit)="onEdit($event)"
+    (delete)="onDelete($event)"
+  ></app-users-list>
+</div>

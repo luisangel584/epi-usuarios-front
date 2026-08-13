@@ -1,11 +1,15 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Role } from '../../models/role.model';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-roles-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ConfirmDialogComponent
+  ],
   template: `
     <div class="roles-list">
       <div *ngIf="loading" class="loading">Cargando roles...</div>
@@ -26,7 +30,7 @@ import { Role } from '../../models/role.model';
             <td>{{ role.createdAt | date:'short' }}</td>
             <td>
               <button (click)="edit.emit(role)">Editar</button>
-              <button (click)="delete.emit(role.id)" class="btn-danger">Eliminar</button>
+              <button (click)="requestDelete(role.id)" class="btn-danger">Eliminar</button>
             </td>
           </tr>
           <tr *ngIf="roles.length === 0">
@@ -34,6 +38,13 @@ import { Role } from '../../models/role.model';
           </tr>
         </tbody>
       </table>
+
+      <app-confirm-dialog
+        [visible]="pendingDeleteId !== null"
+        message="¿Seguro que deseas eliminar este rol?"
+        (confirm)="confirmDelete()"
+        (cancel)="cancelDelete()"
+      ></app-confirm-dialog>
     </div>
   `,
   styles: `
@@ -52,4 +63,21 @@ export class RolesListComponent {
   @Input() loading = false;
   @Output() edit = new EventEmitter<Role>();
   @Output() delete = new EventEmitter<string>();
+
+  pendingDeleteId: string | null = null;
+
+  requestDelete(id: string): void {
+    this.pendingDeleteId = id;
+  }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId !== null) {
+      this.delete.emit(this.pendingDeleteId);
+      this.pendingDeleteId = null;
+    }
+  }
+
+  cancelDelete(): void {
+    this.pendingDeleteId = null;
+  }
 }

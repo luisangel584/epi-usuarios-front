@@ -1,0 +1,19 @@
+<div class="user-edit-page">
+  <h2 class="user-edit-page__title">
+    Editar Usuario
+  </h2>
+
+  <ng-container *ngIf="user$ | async as user; else notFound">
+    <app-user-form
+      [editingUser]="user"
+      (save)="onSave($event)"
+      (cancel)="onCancel()"
+    ></app-user-form>
+  </ng-container>
+
+  <ng-template #notFound>
+    <p class="user-edit-page__status">
+      Cargando usuario...
+    </p>
+  </ng-template>
+</div>
