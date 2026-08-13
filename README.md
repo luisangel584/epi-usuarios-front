@@ -28,12 +28,14 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Archivos de environment
 
-La configuración que cambia según el ambiente vive en `src/environments`. Por ahora solo existen dos: `environment.ts` para producción y `environment.development.ts` para desarrollo. Ambos exportan el mismo shape, hoy nada más traen `usersApiBaseUrl`, la URL base que usa `UsersService` para pegarle a la API:
+La configuración que cambia según el ambiente vive en `src/environments`. Por ahora solo existen dos: `environment.ts` para producción y `environment.development.ts` para desarrollo. Ambos exportan el mismo shape:
 
 ```typescript
 // src/environments/environment.ts (producción)
 export const environment = {
   usersApiBaseUrl: 'https://dummyjson.com',
+  maxEditableUserId: 10,
+  erpAppHeaderValue: 'testing',
 };
 ```
 
@@ -41,8 +43,16 @@ export const environment = {
 // src/environments/environment.development.ts (desarrollo)
 export const environment = {
   usersApiBaseUrl: 'https://dummyjson.com',
+  maxEditableUserId: 10,
+  erpAppHeaderValue: 'testing',
 };
 ```
+
+* `usersApiBaseUrl`: la URL base que usa `UsersService` para request al API externo de usuarios.
+* `maxEditableUserId`: el id más alto que se puede editar. Lo lee `userEditGuard` (`users/guards/user-edit.guard.ts`) para decidir si deja pasar la ruta `users/:id/edit` o redirige a `/users`; cualquier id mayor a este valor se bloquea.
+* `erpAppHeaderValue`: el valor del header `X-ERP-APP` que `erpAppInterceptor` (`interceptors/erp-app.interceptor.ts`) agrega a todas las requests salientes.
+
+Los dos valores nuevos hoy son iguales en ambos archivos porque no hay todavía una diferencia real entre dev y producción, pero viven en environment por la misma razón que `usersApiBaseUrl`: el día que el límite de edición o el header cambien según el ambiente, se ajustan ahí sin tocar el guard ni el interceptor.
 
 El código nunca importa el archivo development directamente, siempre importa `environment.ts`:
 
